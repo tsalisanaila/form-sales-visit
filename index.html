@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Sales Visit</title>
     <style>
-        /* Desain UI Modern */
+        /* Desain UI Minimalis dengan Tema Warna Khusus */
         :root {
-            --primary-color: #4361ee;
-            --primary-hover: #3a53d0;
-            --bg-color: #f8f9fa;
+            --primary-color: #14a07d; /* Hijau Teal Utama */
+            --accent-color: #ffd44b;  /* Kuning Aksen */
+            --bg-color: #f4f7f6;      /* Abu-abu sangat muda untuk latar belakang */
             --card-bg: #ffffff;
             --text-color: #333333;
             --border-color: #ced4da;
@@ -29,9 +29,21 @@
             background-color: var(--card-bg);
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
             width: 100%;
             max-width: 500px;
+            border-top: 6px solid var(--accent-color); /* Garis aksen kuning di atas */
+        }
+
+        /* Pengaturan Logo */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            max-width: 140px; /* Lebar maksimal logo */
+            height: auto;
         }
 
         h2 {
@@ -60,13 +72,13 @@
             border-radius: 6px;
             box-sizing: border-box; 
             font-size: 14px;
-            transition: border-color 0.3s;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         input[type="text"]:focus, select:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+            box-shadow: 0 0 0 3px rgba(20, 160, 125, 0.15); /* Efek cahaya hijau saat diklik */
         }
 
         button { 
@@ -79,15 +91,17 @@
             width: 100%; 
             font-size: 16px;
             font-weight: 600;
-            transition: background-color 0.3s, transform 0.1s;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         button:hover { 
-            background-color: var(--primary-hover); 
+            background-color: var(--accent-color); 
+            color: #333333; /* Teks menjadi gelap saat tombol kuning */
         }
         
         button:disabled {
             background-color: #a0aabf;
+            color: white;
             cursor: not-allowed;
         }
 
@@ -114,6 +128,7 @@
             width: 16px;
             height: 16px;
             cursor: pointer;
+            accent-color: var(--primary-color); /* Warna centang hijau */
         }
 
         #div_other_produk { 
@@ -122,13 +137,19 @@
         }
         
         .status-group {
-            grid-template-columns: 1fr; /* Satu kolom agar teks tidak terpotong */
+            grid-template-columns: 1fr;
         }
     </style>
 </head>
 <body>
 
     <div class="form-container">
+        <!-- Tempat Logo -->
+        <div class="logo-container">
+            <!-- Ganti src di bawah ini dengan link gambar logo Anda -->
+            <img src="https://via.placeholder.com/300x100.png?text=Logo+Perusahaan" alt="Logo Perusahaan">
+        </div>
+
         <h2>Kunjungan Sales</h2>
         <form id="salesForm">
             
@@ -146,9 +167,15 @@
                 <label>Nama Sales</label>
                 <select id="nama_sales" required>
                     <option value="">-- Pilih Sales --</option>
-                    <option value="Andi">Andi</option>
-                    <option value="Budi">Budi</option>
-                    <option value="Citra">Citra</option>
+                    <option value="Amin">Amin</option>
+                    <option value="Arif">Arif</option>
+                    <option value="Dodi">Dodi</option>
+                    <option value="Gustira">Gustira</option>
+                    <option value="Ilma">Ilma</option>
+                    <option value="Laely">Laely</option>
+                    <option value="Naura">Naura</option>
+                    <option value="Pak Hafidz">Pak Hafidz</option>
+                    <option value="Pak Ihsan">Pak Ihsan</option>
                 </select>
             </div>
 
@@ -172,7 +199,7 @@
             <div class="form-group">
                 <label>Produk Offer</label>
                 <div class="checkbox-group">
-                    <label><input type="checkbox" class="produk" value="Raw material"> Raw material</label>
+                    <label><input type="checkbox" class="produk" value="Raw Material"> Raw material</label>
                     <label><input type="checkbox" class="produk" value="Konsentrat"> Konsentrat</label>
                     <label><input type="checkbox" class="produk" value="Slice Beef"> Slice Beef</label>
                     <label><input type="checkbox" class="produk" value="Frozen Beef"> Frozen Beef</label>
@@ -193,7 +220,7 @@
                     <label><input type="checkbox" class="status" value="Contact"> Contact</label>
                     <label><input type="checkbox" class="status" value="Quotation"> Quotation</label>
                     <label><input type="checkbox" class="status" value="Sampling"> Sampling</label>
-                    <label><input type="checkbox" class="status" value="Closed won"> Closed won</label>
+                    <label><input type="checkbox" class="status" value="Closed Won"> Closed won</label>
                     <label><input type="checkbox" class="status" value="Closed Lost"> Closed Lost</label>
                     <label><input type="checkbox" class="status" value="Repeat Order"> Repeat Order</label>
                 </div>
