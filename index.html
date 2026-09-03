@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Sales Visit</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], select { width: 100%; padding: 8px; box-sizing: border-box; }
+        button { padding: 10px 20px; background-color: #28a745; color: white; border: none; cursor: pointer; width: 100%; }
+        button:hover { background-color: #218838; }
+        .checkbox-group { display: flex; flex-direction: column; gap: 5px; }
+        #div_other_produk { display: none; margin-top: 5px; } /* Disembunyikan secara default */
+    </style>
+</head>
+<body>
+
+    <h2>Input Kunjungan Sales</h2>
+    <form id="salesForm">
+        
+        <div class="form-group">
+            <label>Stream Line</label>
+            <select id="stream_line" required>
+                <option value="">-- Pilih Stream --</option>
+                <option value="Feed for Livestock">Feed for Livestock</option>
+                <option value="Feed for Milk">Feed for Milk</option>
+                <option value="Feed for Meat">Feed for Meat</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Nama Sales</label>
+            <select id="nama_sales" required>
+                <option value="">-- Pilih Sales --</option>
+                <option value="Andi">Andi</option>
+                <option value="Budi">Budi</option>
+                <option value="Citra">Citra</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Nama / Outlet (Ketik untuk mencari atau tambah baru)</label>
+            <input type="text" id="nama_outlet" list="outlet_list" autocomplete="off" required>
+            <datalist id="outlet_list"></datalist>
+            <input type="hidden" id="id_outlet"> 
+        </div>
+
+        <div class="form-group">
+            <label>Alamat</label>
+            <input type="text" id="alamat" required>
+        </div>
+
+        <div class="form-group">
+            <label>No Telp</label>
+            <input type="text" id="no_telp" required>
+        </div>
+
+        <div class="form-group">
+            <label>Produk Offer (Bisa lebih dari 1)</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" class="produk" value="Raw material"> Raw material</label>
+                <label><input type="checkbox" class="produk" value="Konsentrat Indigofera"> Konsentrat Indigofera</label>
+                <label><input type="checkbox" class="produk" value="Slice Beef"> Slice Beef</label>
+                <label><input type="checkbox" class="produk" value="Frozen Beef"> Frozen Beef</label>
+                <label><input type="checkbox" class="produk" value="Fresh Beef"> Fresh Beef</label>
+                <label><input type="checkbox" class="produk" value="Yogurt"> Yogurt</label>
+                <label><input type="checkbox" class="produk" value="Milk"> Milk</label>
+                <label><input type="checkbox" id="check_other_produk" value="Other"> Other</label>
+            </div>
+            <!-- Input text manual jika Others dicentang -->
+            <div id="div_other_produk">
+                <input type="text" id="text_other_produk" placeholder="Ketik produk lainnya...">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Status Kunjungan (Bisa lebih dari 1)</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" class="status" value="Prospect"> Prospect</label>
+                <label><input type="checkbox" class="status" value="Contact"> Contact</label>
+                <label><input type="checkbox" class="status" value="Quotation"> Quotation</label>
+                <label><input type="checkbox" class="status" value="Sampling"> Sampling</label>
+                <label><input type="checkbox" class="status" value="Closed won"> Closed won</label>
+                <label><input type="checkbox" class="status" value="Closed Lost"> Closed Lost</label>
+                <label><input type="checkbox" class="status" value="Repeat Order"> Repeat Order</label>
+            </div>
+        </div>
+
+        <button type="submit">Simpan Data</button>
+    </form>
+
+    <script>
+        // MASUKKAN URL WEB APP ANDA DI SINI
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbyn4LLeDQ4Y6SQJwpiyyfPSwBkuqYlD7M1850AoMHxPP09JTOq6xzD1ZB2gDkRojKAfLg/exec'; 
+
+        let masterOutlets = [];
+
+        // Menampilkan text box 'Other' jika dicentang
+        document.getElementById('check_other_produk').addEventListener('change', function() {
+            const divOther = document.getElementById('div_other_produk');
+            if(this.checked) {
+                divOther.style.display = 'block';
+                document.getElementById('text_other_produk').required = true;
+            } else {
+                divOther.style.display = 'none';
+                document.getElementById('text_other_produk').required = false;
+                document.getElementById('text_other_produk').value = ''; // Reset isinya
+            }
+        });
+
+        // Ambil data dari GAS saat dimuat
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch(GAS_URL)
+                .then(response => response.json())
+                .then(data => {
+                    masterOutlets = data;
+                    const datalist = document.getElementById('outlet_list');
+                    data.forEach(outlet => {
+                        const option = document.createElement('option');
+                        option.value = outlet.nama;
+                        datalist.appendChild(option);
+                    });
+                });
+        });
+
+        // Autocomplete
+        document.getElementById('nama_outlet').addEventListener('input', function(e) {
+            const inputName = e.target.value.toLowerCase();
+            const foundOutlet = masterOutlets.find(o => o.nama.toLowerCase() === inputName);
+            
+            if (foundOutlet) {
+                document.getElementById('alamat').value = foundOutlet.alamat;
+                document.getElementById('no_telp').value = foundOutlet.no_telp;
+                document.getElementById('id_outlet').value = foundOutlet.id;
+            } else {
+                document.getElementById('id_outlet').value = '';
+            }
+        });
+
+        // Submit form
+        document.getElementById('salesForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Proses Produk Offer
+            let produkArray = Array.from(document.querySelectorAll('.produk:checked'))
+                                   .filter(cb => cb.value !== 'Other') // Buang kata 'Other'
+                                   .map(cb => cb.value);
+            
+            // Jika Other dicentang, masukkan nilai dari text box manual
+            if (document.getElementById('check_other_produk').checked) {
+                produkArray.push(document.getElementById('text_other_produk').value);
+            }
+            const produkString = produkArray.join(', ');
+
+            // Proses Status
+            const statusArray = Array.from(document.querySelectorAll('.status:checked')).map(cb => cb.value);
+            const statusString = statusArray.join(', ');
+
+            // Validasi jika status kosong
+            if(statusArray.length === 0) {
+                alert("Harap pilih minimal 1 Status Kunjungan!");
+                return;
+            }
+
+            const payload = {
+                stream_line: document.getElementById('stream_line').value,
+                nama_sales: document.getElementById('nama_sales').value,
+                id_outlet: document.getElementById('id_outlet').value,
+                nama_outlet: document.getElementById('nama_outlet').value,
+                alamat: document.getElementById('alamat').value,
+                no_telp: document.getElementById('no_telp').value,
+                produk_offer: produkString,
+                status_array: statusArray,   // Digunakan GAS untuk mencari status prioritas
+                status_string: statusString  // Dimasukkan ke sheet visits
+            };
+
+            // Mengubah tombol menjadi loading state agar tidak di-klik 2x
+            const btnSubmit = document.querySelector('button[type="submit"]');
+            btnSubmit.innerText = "Menyimpan...";
+            btnSubmit.disabled = true;
+
+            fetch(GAS_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Data kunjungan berhasil disimpan!');
+                document.getElementById('salesForm').reset();
+                document.getElementById('id_outlet').value = '';
+                document.getElementById('div_other_produk').style.display = 'none';
+            })
+            .catch(error => {
+                alert('Terjadi kesalahan saat menyimpan data.');
+                console.error(error);
+            })
+            .finally(() => {
+                btnSubmit.innerText = "Simpan Data";
+                btnSubmit.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>
