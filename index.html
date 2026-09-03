@@ -5,91 +5,203 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Sales Visit</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: auto; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="text"], select { width: 100%; padding: 8px; box-sizing: border-box; }
-        button { padding: 10px 20px; background-color: #28a745; color: white; border: none; cursor: pointer; width: 100%; }
-        button:hover { background-color: #218838; }
-        .checkbox-group { display: flex; flex-direction: column; gap: 5px; }
-        #div_other_produk { display: none; margin-top: 5px; } /* Disembunyikan secara default */
+        /* Desain UI Modern */
+        :root {
+            --primary-color: #4361ee;
+            --primary-hover: #3a53d0;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #ced4da;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px; 
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .form-container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        .form-group { 
+            margin-bottom: 20px; 
+        }
+
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+            font-size: 14px;
+        }
+
+        input[type="text"], select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box; 
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+
+        button { 
+            padding: 14px 20px; 
+            background-color: var(--primary-color); 
+            color: white; 
+            border: none; 
+            border-radius: 6px;
+            cursor: pointer; 
+            width: 100%; 
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        button:hover { 
+            background-color: var(--primary-hover); 
+        }
+        
+        button:disabled {
+            background-color: #a0aabf;
+            cursor: not-allowed;
+        }
+
+        .checkbox-group { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 10px; 
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        #div_other_produk { 
+            display: none; 
+            margin-top: 10px; 
+        }
+        
+        .status-group {
+            grid-template-columns: 1fr; /* Satu kolom agar teks tidak terpotong */
+        }
     </style>
 </head>
 <body>
 
-    <h2>Input Kunjungan Sales</h2>
-    <form id="salesForm">
-        
-        <div class="form-group">
-            <label>Stream Line</label>
-            <select id="stream_line" required>
-                <option value="">-- Pilih Stream --</option>
-                <option value="Feed for Livestock">Feed for Livestock</option>
-                <option value="Feed for Milk">Feed for Milk</option>
-                <option value="Feed for Meat">Feed for Meat</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Nama Sales</label>
-            <select id="nama_sales" required>
-                <option value="">-- Pilih Sales --</option>
-                <option value="Andi">Andi</option>
-                <option value="Budi">Budi</option>
-                <option value="Citra">Citra</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Nama / Outlet (Ketik untuk mencari atau tambah baru)</label>
-            <input type="text" id="nama_outlet" list="outlet_list" autocomplete="off" required>
-            <datalist id="outlet_list"></datalist>
-            <input type="hidden" id="id_outlet"> 
-        </div>
-
-        <div class="form-group">
-            <label>Alamat</label>
-            <input type="text" id="alamat" required>
-        </div>
-
-        <div class="form-group">
-            <label>No Telp</label>
-            <input type="text" id="no_telp" required>
-        </div>
-
-        <div class="form-group">
-            <label>Produk Offer (Bisa lebih dari 1)</label>
-            <div class="checkbox-group">
-                <label><input type="checkbox" class="produk" value="Raw material"> Raw material</label>
-                <label><input type="checkbox" class="produk" value="Konsentrat Indigofera"> Konsentrat Indigofera</label>
-                <label><input type="checkbox" class="produk" value="Slice Beef"> Slice Beef</label>
-                <label><input type="checkbox" class="produk" value="Frozen Beef"> Frozen Beef</label>
-                <label><input type="checkbox" class="produk" value="Fresh Beef"> Fresh Beef</label>
-                <label><input type="checkbox" class="produk" value="Yogurt"> Yogurt</label>
-                <label><input type="checkbox" class="produk" value="Milk"> Milk</label>
-                <label><input type="checkbox" id="check_other_produk" value="Other"> Other</label>
+    <div class="form-container">
+        <h2>Kunjungan Sales</h2>
+        <form id="salesForm">
+            
+            <div class="form-group">
+                <label>Stream Line</label>
+                <select id="stream_line" required>
+                    <option value="">-- Pilih Stream --</option>
+                    <option value="Feed for Livestock">Feed for Livestock</option>
+                    <option value="Feed for Milk">Feed for Milk</option>
+                    <option value="Feed for Meat">Feed for Meat</option>
+                </select>
             </div>
-            <!-- Input text manual jika Others dicentang -->
-            <div id="div_other_produk">
-                <input type="text" id="text_other_produk" placeholder="Ketik produk lainnya...">
-            </div>
-        </div>
 
-        <div class="form-group">
-            <label>Status Kunjungan (Bisa lebih dari 1)</label>
-            <div class="checkbox-group">
-                <label><input type="checkbox" class="status" value="Prospect"> Prospect</label>
-                <label><input type="checkbox" class="status" value="Contact"> Contact</label>
-                <label><input type="checkbox" class="status" value="Quotation"> Quotation</label>
-                <label><input type="checkbox" class="status" value="Sampling"> Sampling</label>
-                <label><input type="checkbox" class="status" value="Closed won"> Closed won</label>
-                <label><input type="checkbox" class="status" value="Closed Lost"> Closed Lost</label>
-                <label><input type="checkbox" class="status" value="Repeat Order"> Repeat Order</label>
+            <div class="form-group">
+                <label>Nama Sales</label>
+                <select id="nama_sales" required>
+                    <option value="">-- Pilih Sales --</option>
+                    <option value="Andi">Andi</option>
+                    <option value="Budi">Budi</option>
+                    <option value="Citra">Citra</option>
+                </select>
             </div>
-        </div>
 
-        <button type="submit">Simpan Data</button>
-    </form>
+            <div class="form-group">
+                <label>Nama / Outlet (Cari atau tambah baru)</label>
+                <input type="text" id="nama_outlet" list="outlet_list" autocomplete="off" placeholder="Ketik nama outlet..." required>
+                <datalist id="outlet_list"></datalist>
+                <input type="hidden" id="id_outlet"> 
+            </div>
+
+            <div class="form-group">
+                <label>Alamat</label>
+                <input type="text" id="alamat" placeholder="Masukkan alamat lengkap..." required>
+            </div>
+
+            <div class="form-group">
+                <label>No Telp</label>
+                <input type="text" id="no_telp" placeholder="Contoh: 08123456789" required>
+            </div>
+
+            <div class="form-group">
+                <label>Produk Offer</label>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" class="produk" value="Raw material"> Raw material</label>
+                    <label><input type="checkbox" class="produk" value="Konsentrat"> Konsentrat</label>
+                    <label><input type="checkbox" class="produk" value="Slice Beef"> Slice Beef</label>
+                    <label><input type="checkbox" class="produk" value="Frozen Beef"> Frozen Beef</label>
+                    <label><input type="checkbox" class="produk" value="Fresh Beef"> Fresh Beef</label>
+                    <label><input type="checkbox" class="produk" value="Yogurt"> Yogurt</label>
+                    <label><input type="checkbox" class="produk" value="Milk"> Milk</label>
+                    <label><input type="checkbox" id="check_other_produk" value="Other"> Other</label>
+                </div>
+                <div id="div_other_produk">
+                    <input type="text" id="text_other_produk" placeholder="Ketik produk lainnya...">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Status Kunjungan</label>
+                <div class="checkbox-group status-group">
+                    <label><input type="checkbox" class="status" value="Prospect"> Prospect</label>
+                    <label><input type="checkbox" class="status" value="Contact"> Contact</label>
+                    <label><input type="checkbox" class="status" value="Quotation"> Quotation</label>
+                    <label><input type="checkbox" class="status" value="Sampling"> Sampling</label>
+                    <label><input type="checkbox" class="status" value="Closed won"> Closed won</label>
+                    <label><input type="checkbox" class="status" value="Closed Lost"> Closed Lost</label>
+                    <label><input type="checkbox" class="status" value="Repeat Order"> Repeat Order</label>
+                </div>
+            </div>
+
+            <button type="submit">Simpan Data</button>
+        </form>
+    </div>
 
     <script>
         // MASUKKAN URL WEB APP ANDA DI SINI
@@ -97,7 +209,6 @@
 
         let masterOutlets = [];
 
-        // Menampilkan text box 'Other' jika dicentang
         document.getElementById('check_other_produk').addEventListener('change', function() {
             const divOther = document.getElementById('div_other_produk');
             if(this.checked) {
@@ -106,11 +217,10 @@
             } else {
                 divOther.style.display = 'none';
                 document.getElementById('text_other_produk').required = false;
-                document.getElementById('text_other_produk').value = ''; // Reset isinya
+                document.getElementById('text_other_produk').value = ''; 
             }
         });
 
-        // Ambil data dari GAS saat dimuat
         document.addEventListener("DOMContentLoaded", function() {
             fetch(GAS_URL)
                 .then(response => response.json())
@@ -125,7 +235,6 @@
                 });
         });
 
-        // Autocomplete
         document.getElementById('nama_outlet').addEventListener('input', function(e) {
             const inputName = e.target.value.toLowerCase();
             const foundOutlet = masterOutlets.find(o => o.nama.toLowerCase() === inputName);
@@ -139,26 +248,21 @@
             }
         });
 
-        // Submit form
         document.getElementById('salesForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Proses Produk Offer
             let produkArray = Array.from(document.querySelectorAll('.produk:checked'))
-                                   .filter(cb => cb.value !== 'Other') // Buang kata 'Other'
+                                   .filter(cb => cb.value !== 'Other') 
                                    .map(cb => cb.value);
             
-            // Jika Other dicentang, masukkan nilai dari text box manual
             if (document.getElementById('check_other_produk').checked) {
                 produkArray.push(document.getElementById('text_other_produk').value);
             }
             const produkString = produkArray.join(', ');
 
-            // Proses Status
             const statusArray = Array.from(document.querySelectorAll('.status:checked')).map(cb => cb.value);
             const statusString = statusArray.join(', ');
 
-            // Validasi jika status kosong
             if(statusArray.length === 0) {
                 alert("Harap pilih minimal 1 Status Kunjungan!");
                 return;
@@ -172,11 +276,10 @@
                 alamat: document.getElementById('alamat').value,
                 no_telp: document.getElementById('no_telp').value,
                 produk_offer: produkString,
-                status_array: statusArray,   // Digunakan GAS untuk mencari status prioritas
-                status_string: statusString  // Dimasukkan ke sheet visits
+                status_array: statusArray,   
+                status_string: statusString  
             };
 
-            // Mengubah tombol menjadi loading state agar tidak di-klik 2x
             const btnSubmit = document.querySelector('button[type="submit"]');
             btnSubmit.innerText = "Menyimpan...";
             btnSubmit.disabled = true;
@@ -193,7 +296,7 @@
                 document.getElementById('div_other_produk').style.display = 'none';
             })
             .catch(error => {
-                alert('Terjadi kesalahan saat menyimpan data.');
+                alert('Terjadi kesalahan saat menyimpan data. Periksa koneksi internet Anda.');
                 console.error(error);
             })
             .finally(() => {
