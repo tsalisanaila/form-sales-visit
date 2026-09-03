@@ -7,9 +7,9 @@
     <style>
         /* Desain UI Minimalis dengan Tema Warna Khusus */
         :root {
-            --primary-color: #14a07d; /* Hijau Teal Utama */
-            --accent-color: #ffd44b;  /* Kuning Aksen */
-            --bg-color: #f4f7f6;      /* Abu-abu sangat muda untuk latar belakang */
+            --primary-color: #14a07d; 
+            --accent-color: #ffd44b;  
+            --bg-color: #f4f7f6;      
             --card-bg: #ffffff;
             --text-color: #333333;
             --border-color: #ced4da;
@@ -32,17 +32,16 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.08);
             width: 100%;
             max-width: 500px;
-            border-top: 6px solid var(--accent-color); /* Garis aksen kuning di atas */
+            border-top: 6px solid var(--accent-color); 
         }
 
-        /* Pengaturan Logo */
         .logo-container {
             text-align: center;
             margin-bottom: 20px;
         }
 
         .logo-container img {
-            max-width: 140px; /* Lebar maksimal logo */
+            max-width: 140px; 
             height: auto;
         }
 
@@ -78,7 +77,7 @@
         input[type="text"]:focus, select:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(20, 160, 125, 0.15); /* Efek cahaya hijau saat diklik */
+            box-shadow: 0 0 0 3px rgba(20, 160, 125, 0.15); 
         }
 
         button { 
@@ -96,7 +95,7 @@
 
         button:hover { 
             background-color: var(--accent-color); 
-            color: #333333; /* Teks menjadi gelap saat tombol kuning */
+            color: #333333; 
         }
         
         button:disabled {
@@ -128,7 +127,7 @@
             width: 16px;
             height: 16px;
             cursor: pointer;
-            accent-color: var(--primary-color); /* Warna centang hijau */
+            accent-color: var(--primary-color); 
         }
 
         #div_other_produk { 
@@ -139,12 +138,25 @@
         .status-group {
             grid-template-columns: 1fr;
         }
+
+        /* CSS Baru untuk Label Status */
+        .status-badge {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 6px 10px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            font-size: 13px;
+            color: var(--primary-color);
+            font-weight: 600;
+            display: none; 
+            border: 1px solid var(--border-color);
+        }
     </style>
 </head>
 <body>
 
     <div class="form-container">
-        <!-- Tempat Logo -->
         <div class="logo-container">
             <!-- Ganti src di bawah ini dengan link gambar logo Anda -->
             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQO0ka0SRvHCd4Aneee1AkR-1nWokSKLVhpuQUXoAbB16DGNj2p6D6V0-o&s=10" alt="Logo Perusahaan">
@@ -167,15 +179,9 @@
                 <label>Nama Sales</label>
                 <select id="nama_sales" required>
                     <option value="">-- Pilih Sales --</option>
-                    <option value="Amin">Amin</option>
-                    <option value="Arif">Arif</option>
-                    <option value="Dodi">Dodi</option>
-                    <option value="Gustira">Gustira</option>
-                    <option value="Ilma">Ilma</option>
-                    <option value="Laely">Laely</option>
-                    <option value="Naura">Naura</option>
-                    <option value="Pak Hafidz">Pak Hafidz</option>
-                    <option value="Pak Ihsan">Pak Ihsan</option>
+                    <option value="Andi">Andi</option>
+                    <option value="Budi">Budi</option>
+                    <option value="Citra">Citra</option>
                 </select>
             </div>
 
@@ -184,6 +190,11 @@
                 <input type="text" id="nama_outlet" list="outlet_list" autocomplete="off" placeholder="Ketik nama outlet..." required>
                 <datalist id="outlet_list"></datalist>
                 <input type="hidden" id="id_outlet"> 
+                
+                <!-- Label untuk menampilkan status terakhir -->
+                <div id="info_status" class="status-badge">
+                    Status Terakhir: <span id="text_status_terbaru">-</span>
+                </div>
             </div>
 
             <div class="form-group">
@@ -199,7 +210,7 @@
             <div class="form-group">
                 <label>Produk Offer</label>
                 <div class="checkbox-group">
-                    <label><input type="checkbox" class="produk" value="Raw Material"> Raw material</label>
+                    <label><input type="checkbox" class="produk" value="Raw material"> Raw material</label>
                     <label><input type="checkbox" class="produk" value="Konsentrat"> Konsentrat</label>
                     <label><input type="checkbox" class="produk" value="Slice Beef"> Slice Beef</label>
                     <label><input type="checkbox" class="produk" value="Frozen Beef"> Frozen Beef</label>
@@ -220,7 +231,7 @@
                     <label><input type="checkbox" class="status" value="Contact"> Contact</label>
                     <label><input type="checkbox" class="status" value="Quotation"> Quotation</label>
                     <label><input type="checkbox" class="status" value="Sampling"> Sampling</label>
-                    <label><input type="checkbox" class="status" value="Closed Won"> Closed won</label>
+                    <label><input type="checkbox" class="status" value="Closed won"> Closed won</label>
                     <label><input type="checkbox" class="status" value="Closed Lost"> Closed Lost</label>
                     <label><input type="checkbox" class="status" value="Repeat Order"> Repeat Order</label>
                 </div>
@@ -266,12 +277,21 @@
             const inputName = e.target.value.toLowerCase();
             const foundOutlet = masterOutlets.find(o => o.nama.toLowerCase() === inputName);
             
+            const infoStatus = document.getElementById('info_status');
+            const textStatus = document.getElementById('text_status_terbaru');
+
             if (foundOutlet) {
                 document.getElementById('alamat').value = foundOutlet.alamat;
                 document.getElementById('no_telp').value = foundOutlet.no_telp;
                 document.getElementById('id_outlet').value = foundOutlet.id;
+                
+                // Menampilkan status terbaru dari outlet yang dipilih
+                let statusTerkini = foundOutlet.status_terbaru;
+                textStatus.innerText = statusTerkini ? statusTerkini : 'Belum ada status';
+                infoStatus.style.display = 'inline-block';
             } else {
                 document.getElementById('id_outlet').value = '';
+                infoStatus.style.display = 'none';
             }
         });
 
@@ -321,6 +341,7 @@
                 document.getElementById('salesForm').reset();
                 document.getElementById('id_outlet').value = '';
                 document.getElementById('div_other_produk').style.display = 'none';
+                document.getElementById('info_status').style.display = 'none'; // Sembunyikan badge setelah submit
             })
             .catch(error => {
                 alert('Terjadi kesalahan saat menyimpan data. Periksa koneksi internet Anda.');
