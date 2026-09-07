@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Sales Activity</title>
     <style>
+        /* CSS tetap sama */
         :root {
             --primary-color: #14a07d; 
             --accent-color: #ffd44b;  
@@ -165,6 +166,15 @@
                 </select>
             </div>
 
+            <!-- Tipe Aktivitas (Visit/Call) DIKEMBALIKAN -->
+            <div class="form-group">
+                <label>Tipe Aktivitas</label>
+                <div class="checkbox-group">
+                    <label><input type="radio" name="tipe_aktivitas" value="Visit" required> Visit</label>
+                    <label><input type="radio" name="tipe_aktivitas" value="Call" required> Call</label>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label>Nama / Outlet (Cari atau tambah baru)</label>
                 <input type="text" id="nama_outlet" list="outlet_list" autocomplete="off" placeholder="Ketik nama outlet..." required>
@@ -186,13 +196,13 @@
                 <input type="text" id="no_telp" placeholder="Contoh: 08123456789" required>
             </div>
 
-            <!-- Tipe Aktivitas dipindah dan diperbarui di sini -->
+            <!-- Sales Activity (Visit/Collect Order/Collect AR) BARU DITAMBAHKAN -->
             <div class="form-group">
                 <label>Sales Activity</label>
                 <div class="checkbox-group status-group">
-                    <label><input type="radio" name="tipe_aktivitas" value="Visit" required> Visit</label>
-                    <label><input type="radio" name="tipe_aktivitas" value="Collect Order" required> Collect Order</label>
-                    <label><input type="radio" name="tipe_aktivitas" value="Collect AR" required> Collect AR</label>
+                    <label><input type="radio" name="sales_activity" value="Visit" required> Visit</label>
+                    <label><input type="radio" name="sales_activity" value="Collect Order" required> Collect Order</label>
+                    <label><input type="radio" name="sales_activity" value="Collect AR" required> Collect AR</label>
                 </div>
             </div>
 
@@ -228,7 +238,6 @@
             </div>
 
             <div class="form-group">
-                <!-- Label upload foto diubah -->
                 <label>Upload foto dokumentasi (Maks 2MB)</label>
                 <input type="file" id="foto_visit" accept="image/jpeg, image/png, image/jpg" required>
             </div>
@@ -316,7 +325,9 @@
                 return;
             }
 
+            // MENGAMBIL DUA NILAI YANG BERBEDA
             const tipeAktivitasValue = document.querySelector('input[name="tipe_aktivitas"]:checked').value;
+            const salesActivityValue = document.querySelector('input[name="sales_activity"]:checked').value;
 
             const fileInput = document.getElementById('foto_visit');
             let base64String = "";
@@ -344,7 +355,8 @@
             const payload = {
                 stream_line: document.getElementById('stream_line').value,
                 nama_sales: document.getElementById('nama_sales').value,
-                tipe_aktivitas: tipeAktivitasValue, 
+                tipe_aktivitas: tipeAktivitasValue,      // Dikirim ke backend
+                sales_activity: salesActivityValue,      // Data baru dikirim ke backend
                 id_outlet: document.getElementById('id_outlet').value,
                 nama_outlet: document.getElementById('nama_outlet').value,
                 alamat: document.getElementById('alamat').value,
