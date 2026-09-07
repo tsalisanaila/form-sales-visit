@@ -166,14 +166,6 @@
             </div>
 
             <div class="form-group">
-                <label>Tipe Aktivitas</label>
-                <div class="checkbox-group">
-                    <label><input type="radio" name="tipe_aktivitas" value="Visit" required> Visit</label>
-                    <label><input type="radio" name="tipe_aktivitas" value="Call" required> Call</label>
-                </div>
-            </div>
-
-            <div class="form-group">
                 <label>Nama / Outlet (Cari atau tambah baru)</label>
                 <input type="text" id="nama_outlet" list="outlet_list" autocomplete="off" placeholder="Ketik nama outlet..." required>
                 <datalist id="outlet_list"></datalist>
@@ -194,6 +186,16 @@
                 <input type="text" id="no_telp" placeholder="Contoh: 08123456789" required>
             </div>
 
+            <!-- Tipe Aktivitas dipindah dan diperbarui di sini -->
+            <div class="form-group">
+                <label>Sales Activity</label>
+                <div class="checkbox-group status-group">
+                    <label><input type="radio" name="tipe_aktivitas" value="Visit" required> Visit</label>
+                    <label><input type="radio" name="tipe_aktivitas" value="Collect Order" required> Collect Order</label>
+                    <label><input type="radio" name="tipe_aktivitas" value="Collect AR" required> Collect AR</label>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label>Produk Offer</label>
                 <div class="checkbox-group">
@@ -201,6 +203,7 @@
                     <label><input type="checkbox" class="produk" value="Konsentrat"> Konsentrat</label>
                     <label><input type="checkbox" class="produk" value="Frozen Beef"> Frozen Beef</label>
                     <label><input type="checkbox" class="produk" value="Fresh Beef"> Fresh Beef</label>
+                    <label><input type="checkbox" class="produk" value="Processed Food"> Processed Food</label>
                     <label><input type="checkbox" class="produk" value="Yogurt"> Yogurt</label>
                     <label><input type="checkbox" class="produk" value="Milk"> Milk</label>
                     <label><input type="checkbox" id="check_other_produk" value="Other"> Other</label>
@@ -218,13 +221,15 @@
                     <label><input type="checkbox" class="status" value="Quotation"> Quotation</label>
                     <label><input type="checkbox" class="status" value="Sampling"> Sampling</label>
                     <label><input type="checkbox" class="status" value="Closed Won"> Closed Won</label>
+                    <label><input type="checkbox" class="status" value="Contract"> Contract</label>
                     <label><input type="checkbox" class="status" value="Closed Lost"> Closed Lost</label>
                     <label><input type="checkbox" class="status" value="Repeat Order"> Repeat Order</label>
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Bukti Foto Visit (Maks 2MB)</label>
+                <!-- Label upload foto diubah -->
+                <label>Upload foto dokumentasi (Maks 2MB)</label>
                 <input type="file" id="foto_visit" accept="image/jpeg, image/png, image/jpg" required>
             </div>
 
@@ -285,7 +290,6 @@
             }
         });
 
-        // Mengubah submit menjadi 'async' untuk memproses gambar
         document.getElementById('salesForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -314,7 +318,6 @@
 
             const tipeAktivitasValue = document.querySelector('input[name="tipe_aktivitas"]:checked').value;
 
-            // Proses File Gambar menjadi Base64
             const fileInput = document.getElementById('foto_visit');
             let base64String = "";
             let namaFile = "";
@@ -349,8 +352,8 @@
                 produk_offer: produkString,
                 status_array: statusArray,   
                 status_string: statusString,
-                foto_base64: base64String, // Data gambar
-                foto_nama: namaFile        // Nama file gambar
+                foto_base64: base64String, 
+                foto_nama: namaFile        
             };
 
             fetch(GAS_URL, {
