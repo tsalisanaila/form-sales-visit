@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Sales Activity</title>
     <style>
-        /* CSS tetap sama */
         :root {
             --primary-color: #14a07d; 
             --accent-color: #ffd44b;  
@@ -126,6 +125,16 @@
             display: none; 
             border: 1px solid var(--border-color);
         }
+        #security_warning {
+            display: none;
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -136,6 +145,9 @@
         </div>
 
         <h2>Sales Activity</h2>
+        
+        <div id="security_warning">Akses Ditolak: Link form tidak valid atau Anda tidak memiliki akses.</div>
+
         <form id="salesForm">
             
             <div class="form-group">
@@ -166,7 +178,6 @@
                 </select>
             </div>
 
-            <!-- Tipe Aktivitas (Visit/Call) DIKEMBALIKAN -->
             <div class="form-group">
                 <label>Tipe Aktivitas</label>
                 <div class="checkbox-group">
@@ -196,7 +207,6 @@
                 <input type="text" id="no_telp" placeholder="Contoh: 08123456789" required>
             </div>
 
-            <!-- Sales Activity (Visit/Collect Order/Collect AR) BARU DITAMBAHKAN -->
             <div class="form-group">
                 <label>Sales Activity</label>
                 <div class="checkbox-group status-group">
@@ -249,6 +259,10 @@
     <script>
         // MASUKKAN URL WEB APP ANDA DI SINI
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbz3RrHn-6Mv1DWkaO4yfea0V07dea7Gld1sUgbnYVN_gL6-ZfooAQUXxBpsa2kv_cu8ug/exec'; 
+        
+        // Mengekstrak token rahasia dari URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const secretToken = urlParams.get('token');
 
         let masterOutlets = [];
 
@@ -265,9 +279,22 @@
         });
 
         document.addEventListener("DOMContentLoaded", function() {
-            fetch(GAS_URL)
+            // Jika tidak ada token di URL, hentikan fungsi dan munculkan peringatan
+            if(!secretToken) {
+                document.getElementById('security_warning').style.display = 'block';
+                document.getElementById('salesForm').style.display = 'none';
+                return;
+            }
+
+            // Memanggil API dengan token di parameter URL
+            fetch(GAS_URL + "?token=" + secretToken)
                 .then(response => response.json())
                 .then(data => {
+                    if(data.error) {
+                        document.getElementById('security_warning').style.display = 'block';
+                        document.getElementById('salesForm').style.display = 'none';
+                        return;
+                    }
                     masterOutlets = data;
                     const datalist = document.getElementById('outlet_list');
                     data.forEach(outlet => {
@@ -275,7 +302,8 @@
                         option.value = outlet.nama;
                         datalist.appendChild(option);
                     });
-                });
+                })
+                .catch(error => console.error('Gagal memuat data:', error));
         });
 
         document.getElementById('nama_outlet').addEventListener('input', function(e) {
@@ -325,7 +353,6 @@
                 return;
             }
 
-            // MENGAMBIL DUA NILAI YANG BERBEDA
             const tipeAktivitasValue = document.querySelector('input[name="tipe_aktivitas"]:checked').value;
             const salesActivityValue = document.querySelector('input[name="sales_activity"]:checked').value;
 
@@ -355,8 +382,8 @@
             const payload = {
                 stream_line: document.getElementById('stream_line').value,
                 nama_sales: document.getElementById('nama_sales').value,
-                tipe_aktivitas: tipeAktivitasValue,      // Dikirim ke backend
-                sales_activity: salesActivityValue,      // Data baru dikirim ke backend
+                tipe_aktivitas: tipeAktivitasValue,      
+                sales_activity: salesActivityValue,      
                 id_outlet: document.getElementById('id_outlet').value,
                 nama_outlet: document.getElementById('nama_outlet').value,
                 alamat: document.getElementById('alamat').value,
@@ -365,7 +392,8 @@
                 status_array: statusArray,   
                 status_string: statusString,
                 foto_base64: base64String, 
-                foto_nama: namaFile        
+                foto_nama: namaFile,
+                token: secretToken // Menyertakan token ke dalam payload backend
             };
 
             fetch(GAS_URL, {
@@ -374,11 +402,15 @@
             })
             .then(response => response.json())
             .then(data => {
-                alert('Data aktivitas berhasil disimpan!');
-                document.getElementById('salesForm').reset();
-                document.getElementById('id_outlet').value = '';
-                document.getElementById('div_other_produk').style.display = 'none';
-                document.getElementById('info_status').style.display = 'none'; 
+                if(data.status === "error") {
+                    alert(data.message);
+                } else {
+                    alert('Data aktivitas berhasil disimpan!');
+                    document.getElementById('salesForm').reset();
+                    document.getElementById('id_outlet').value = '';
+                    document.getElementById('div_other_produk').style.display = 'none';
+                    document.getElementById('info_status').style.display = 'none'; 
+                }
             })
             .catch(error => {
                 alert('Terjadi kesalahan saat menyimpan data. Periksa koneksi internet Anda.');
