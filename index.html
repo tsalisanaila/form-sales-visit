@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Sales Activity</title>
     <style>
-        /* Gaya CSS tidak berubah dari versi sebelumnya */
         :root {
             --primary-color: #14a07d; 
             --accent-color: #ffd44b;  
@@ -54,7 +53,7 @@
             font-weight: 600; 
             font-size: 14px;
         }
-        input[type="text"], select { 
+        input[type="text"], select, input[type="file"] { 
             width: 100%; 
             padding: 12px; 
             border: 1px solid var(--border-color);
@@ -135,7 +134,6 @@
             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQO0ka0SRvHCd4Aneee1AkR-1nWokSKLVhpuQUXoAbB16DGNj2p6D6V0-o&s=10" alt="Logo Perusahaan">
         </div>
 
-        <!-- Perubahan 2: Title menjadi Sales Activity -->
         <h2>Sales Activity</h2>
         <form id="salesForm">
             
@@ -154,24 +152,12 @@
                 <select id="nama_sales" required>
                     <option value="">-- Pilih Sales --</option>
                     <option value="Arif">Arif</option>
-                    <option value="David">David</option>
-                    <option value="Dodi">Dodi</option>
-                    <option value="Fajar">Fajar</option>
-                    <option value="Gustira">Gustira</option>
-                    <option value="Ilma">Ilma</option>
-                    <option value="Laely">Laely</option>
-                    <option value="Naura">Naura</option>
-                    <option value="Nindi">Nindi</option>
-                    <option value="Hafidz">Hafidz</option>
-                    <option value="Ihsan">Ihsan</option>
                 </select>
             </div>
 
-            <!-- Perubahan 1: Checkbox (Radio) Visit atau Call -->
             <div class="form-group">
                 <label>Tipe Aktivitas</label>
                 <div class="checkbox-group">
-                    <!-- Perhatikan type="radio" dan name="tipe_aktivitas" yang sama persis -->
                     <label><input type="radio" name="tipe_aktivitas" value="Visit" required> Visit</label>
                     <label><input type="radio" name="tipe_aktivitas" value="Call" required> Call</label>
                 </div>
@@ -201,7 +187,6 @@
             <div class="form-group">
                 <label>Produk Offer</label>
                 <div class="checkbox-group">
-                    <!-- Perubahan 4: Slice Beef dihapus -->
                     <label><input type="checkbox" class="produk" value="Raw material"> Raw material</label>
                     <label><input type="checkbox" class="produk" value="Konsentrat"> Konsentrat</label>
                     <label><input type="checkbox" class="produk" value="Frozen Beef"> Frozen Beef</label>
@@ -215,7 +200,6 @@
                 </div>
             </div>
 
-            <!-- Perubahan 3: Label diubah menjadi Status Update -->
             <div class="form-group">
                 <label>Status Update</label>
                 <div class="checkbox-group status-group">
@@ -229,13 +213,18 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <label>Bukti Foto Visit (Maks 2MB)</label>
+                <input type="file" id="foto_visit" accept="image/jpeg, image/png, image/jpg" required>
+            </div>
+
             <button type="submit">Simpan Data</button>
         </form>
     </div>
 
     <script>
         // MASUKKAN URL WEB APP ANDA DI SINI
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbyn4LLeDQ4Y6SQJwpiyyfPSwBkuqYlD7M1850AoMHxPP09JTOq6xzD1ZB2gDkRojKAfLg/exec'; 
+        const GAS_URL = 'URL_ANDA'; 
 
         let masterOutlets = [];
 
@@ -286,9 +275,14 @@
             }
         });
 
-        document.getElementById('salesForm').addEventListener('submit', function(e) {
+        // Mengubah submit menjadi 'async' untuk memproses gambar
+        document.getElementById('salesForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            const btnSubmit = document.querySelector('button[type="submit"]');
+            btnSubmit.innerText = "Memproses & Menyimpan...";
+            btnSubmit.disabled = true;
+
             let produkArray = Array.from(document.querySelectorAll('.produk:checked'))
                                    .filter(cb => cb.value !== 'Other') 
                                    .map(cb => cb.value);
@@ -303,28 +297,51 @@
 
             if(statusArray.length === 0) {
                 alert("Harap pilih minimal 1 Status Update!");
+                btnSubmit.innerText = "Simpan Data";
+                btnSubmit.disabled = false;
                 return;
             }
 
-            // MENGAMBIL NILAI TIPE AKTIVITAS
             const tipeAktivitasValue = document.querySelector('input[name="tipe_aktivitas"]:checked').value;
+
+            // Proses File Gambar menjadi Base64
+            const fileInput = document.getElementById('foto_visit');
+            let base64String = "";
+            let namaFile = "";
+
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                namaFile = file.name;
+                
+                try {
+                    base64String = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = () => resolve(reader.result.split(',')[1]); 
+                        reader.onerror = error => reject(error);
+                    });
+                } catch (error) {
+                    alert('Gagal memproses gambar. Silakan coba lagi.');
+                    btnSubmit.innerText = "Simpan Data";
+                    btnSubmit.disabled = false;
+                    return;
+                }
+            }
 
             const payload = {
                 stream_line: document.getElementById('stream_line').value,
                 nama_sales: document.getElementById('nama_sales').value,
-                tipe_aktivitas: tipeAktivitasValue, // Data baru ditambahkan ke payload
+                tipe_aktivitas: tipeAktivitasValue, 
                 id_outlet: document.getElementById('id_outlet').value,
                 nama_outlet: document.getElementById('nama_outlet').value,
                 alamat: document.getElementById('alamat').value,
                 no_telp: document.getElementById('no_telp').value,
                 produk_offer: produkString,
                 status_array: statusArray,   
-                status_string: statusString  
+                status_string: statusString,
+                foto_base64: base64String, // Data gambar
+                foto_nama: namaFile        // Nama file gambar
             };
-
-            const btnSubmit = document.querySelector('button[type="submit"]');
-            btnSubmit.innerText = "Menyimpan...";
-            btnSubmit.disabled = true;
 
             fetch(GAS_URL, {
                 method: 'POST',
