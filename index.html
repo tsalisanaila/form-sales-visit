@@ -188,11 +188,9 @@
 
             <div class="form-group">
                 <label>Leads (Perusahaan/Perorangan)</label>
-                <!-- Placeholder ditambahkan sebagai contoh -->
                 <input type="text" id="nama_outlet" list="outlet_list" autocomplete="off" placeholder="Contoh: Maju Makmur, PT" required>
-                <!-- Teks instruksi kecil di bawah kotak input -->
                 <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
-                    *Tulis PT/CV di belakang. Sistem otomatis merapikan huruf kapital.
+                    *Tulis PT/CV di belakang.
                 </small>
                 <datalist id="outlet_list"></datalist>
                 <input type="hidden" id="id_outlet"> 
@@ -206,19 +204,26 @@
                 <label>Alamat</label>
                 <input type="text" id="alamat" placeholder="Contoh: Jl. Merdeka No.10, Kel. Citarum, Kec. Bandung Wetan, Kota Bandung" required>
                 <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
-                    *Isi lengkap sesuai panduan titik Google Maps.
+                    *Isi lengkap sesuai alamat di Google Maps.
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label>PIC (Person In Charge)</label>
+                <input type="text" id="pic" placeholder="Contoh: Budi (Manager) atau Budi" required>
+                <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
+                    *Orang yang ditemui. Jika leads perusahaan, gunakan format: Nama (Jabatan).
                 </small>
             </div>
 
             <div class="form-group">
                 <label>No Telp</label>
-                <!-- Placeholder diubah untuk mencontohkan awalan 62 -->
                 <input type="text" id="no_telp" placeholder="Contoh: 6281234567890" required>
                 <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
                     *Gunakan awalan 62 (Tanpa tanda +, spasi, atau strip).
                 </small>
             </div>
-
+            
             <div class="form-group">
                 <label>Sales Activity</label>
                 <div class="checkbox-group status-group">
@@ -256,6 +261,7 @@
                     <label><input type="checkbox" class="status" value="Closed Won"> Closed Won</label>
                     <label><input type="checkbox" class="status" value="Closed Lost"> Closed Lost</label>
                     <label><input type="checkbox" class="status" value="Repeat Order"> Repeat Order</label>
+                    <!-- Contract dipindah ke paling bawah -->
                     <label><input type="checkbox" class="status" value="Contract"> Contract</label>
                 </div>
             </div>
@@ -270,13 +276,9 @@
     </div>
 
     <script>
-        // MASUKKAN URL WEB APP ANDA DI SINI
         const GAS_URL = 'https://script.google.com/macros/s/AKfycbz3RrHn-6Mv1DWkaO4yfea0V07dea7Gld1sUgbnYVN_gL6-ZfooAQUXxBpsa2kv_cu8ug/exec'; 
-        
-        // Mengekstrak token rahasia dari URL
         const urlParams = new URLSearchParams(window.location.search);
         const secretToken = urlParams.get('token');
-
         let masterOutlets = [];
 
         document.getElementById('check_other_produk').addEventListener('change', function() {
@@ -292,14 +294,12 @@
         });
 
         document.addEventListener("DOMContentLoaded", function() {
-            // Jika tidak ada token di URL, hentikan fungsi dan munculkan peringatan
             if(!secretToken) {
                 document.getElementById('security_warning').style.display = 'block';
                 document.getElementById('salesForm').style.display = 'none';
                 return;
             }
 
-            // Memanggil API dengan token di parameter URL
             fetch(GAS_URL + "?token=" + secretToken)
                 .then(response => response.json())
                 .then(data => {
@@ -329,6 +329,10 @@
             if (foundOutlet) {
                 document.getElementById('alamat').value = foundOutlet.alamat;
                 document.getElementById('no_telp').value = foundOutlet.no_telp;
+                
+                // KODE BARU: Mengisi PIC secara otomatis dari database
+                document.getElementById('pic').value = foundOutlet.pic || ''; 
+                
                 document.getElementById('id_outlet').value = foundOutlet.id;
                 
                 let statusTerkini = foundOutlet.status_terbaru;
@@ -336,39 +340,37 @@
                 infoStatus.style.display = 'inline-block';
             } else {
                 document.getElementById('id_outlet').value = '';
+                // KODE BARU: Kosongkan kotak PIC jika itu leads baru
+                document.getElementById('pic').value = ''; 
                 infoStatus.style.display = 'none';
             }
         });
 
-        // FITUR BARU 1: Format otomatis Title Case untuk Nama Outlet
         document.getElementById('nama_outlet').addEventListener('blur', function(e) {
             let kata = e.target.value.toLowerCase().split(' ');
             for (let i = 0; i < kata.length; i++) {
                 if (kata[i].length > 0) {
-                    kata[i] = kata[i].charAt(0).toUpperCase() + kata[i].substring(1);
+                    let kataBersih = kata[i].replace(/[^a-z]/g, '');
+                    if (kataBersih === 'pt' || kataBersih === 'cv' || kataBersih === 'ud') {
+                        kata[i] = kata[i].toUpperCase(); 
+                    } else {
+                        kata[i] = kata[i].charAt(0).toUpperCase() + kata[i].substring(1);
+                    }
                 }
             }
-            // Menggabungkan kembali kata dan mengembalikan ke kotak input
             e.target.value = kata.join(' ');
         });
 
-        // FITUR: Validasi No Telp (Hanya angka dan paksa awalan 62)
         document.getElementById('no_telp').addEventListener('input', function(e) {
-            // Langkah 1: Hapus semua karakter yang BUKAN angka (seperti spasi, huruf, atau tanda +)
             let angkaBersih = this.value.replace(/[^0-9]/g, '');
-
-            // Langkah 2: Jika pengguna terbiasa mengetik angka '0' di awal, otomatis ubah menjadi '62'
             if (angkaBersih.startsWith('0')) {
                 angkaBersih = '62' + angkaBersih.substring(1);
             }
-
-            // Langkah 3: Tampilkan kembali angka yang sudah bersih dan terformat ke dalam kotak input
             this.value = angkaBersih;
         });
 
         document.getElementById('salesForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const btnSubmit = document.querySelector('button[type="submit"]');
             btnSubmit.innerText = "Memproses & Menyimpan...";
             btnSubmit.disabled = true;
@@ -402,7 +404,6 @@
             if (fileInput.files.length > 0) {
                 const file = fileInput.files[0];
                 namaFile = file.name;
-                
                 try {
                     base64String = await new Promise((resolve, reject) => {
                         const reader = new FileReader();
@@ -421,6 +422,7 @@
             const payload = {
                 stream_line: document.getElementById('stream_line').value,
                 nama_sales: document.getElementById('nama_sales').value,
+                nama_pic: document.getElementById('pic').value,
                 tipe_aktivitas: tipeAktivitasValue,      
                 sales_activity: salesActivityValue,      
                 id_outlet: document.getElementById('id_outlet').value,
@@ -432,7 +434,7 @@
                 status_string: statusString,
                 foto_base64: base64String, 
                 foto_nama: namaFile,
-                token: secretToken // Menyertakan token ke dalam payload backend
+                token: secretToken 
             };
 
             fetch(GAS_URL, {
