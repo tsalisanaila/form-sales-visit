@@ -361,11 +361,43 @@
             e.target.value = kata.join(' ');
         });
 
+        // FITUR: Format otomatis Title Case untuk Alamat
+        document.getElementById('alamat').addEventListener('blur', function(e) {
+            let kata = e.target.value.toLowerCase().split(' ');
+            for (let i = 0; i < kata.length; i++) {
+                if (kata[i].length > 0) {
+                    kata[i] = kata[i].charAt(0).toUpperCase() + kata[i].substring(1);
+                }
+            }
+            e.target.value = kata.join(' ');
+        });
+        
+        // FITUR: Format otomatis Title Case untuk PIC
+        document.getElementById('pic').addEventListener('blur', function(e) {
+            let kata = e.target.value.toLowerCase().split(' ');
+            for (let i = 0; i < kata.length; i++) {
+                if (kata[i].length > 0) {
+                    // Memastikan teks di dalam tanda kurung seperti "(Manager)" tetap berhuruf kapital setelah kurung buka
+                    if(kata[i].charAt(0) === '(' && kata[i].length > 1) {
+                        kata[i] = '(' + kata[i].charAt(1).toUpperCase() + kata[i].substring(2);
+                    } else {
+                        kata[i] = kata[i].charAt(0).toUpperCase() + kata[i].substring(1);
+                    }
+                }
+            }
+            e.target.value = kata.join(' ');
+        });
+        
+        // FITUR: Validasi No Telp (Hanya angka dan paksa awalan 62)
         document.getElementById('no_telp').addEventListener('input', function(e) {
+            // Menghapus semua karakter selain angka
             let angkaBersih = this.value.replace(/[^0-9]/g, '');
+            
+            // Otomatis mengubah angka 0 di awal menjadi 62
             if (angkaBersih.startsWith('0')) {
                 angkaBersih = '62' + angkaBersih.substring(1);
             }
+            
             this.value = angkaBersih;
         });
 
