@@ -360,17 +360,6 @@
             }
             e.target.value = kata.join(' ');
         });
-
-        // FITUR: Format otomatis Title Case untuk Alamat
-        document.getElementById('alamat').addEventListener('blur', function(e) {
-            let kata = e.target.value.toLowerCase().split(' ');
-            for (let i = 0; i < kata.length; i++) {
-                if (kata[i].length > 0) {
-                    kata[i] = kata[i].charAt(0).toUpperCase() + kata[i].substring(1);
-                }
-            }
-            e.target.value = kata.join(' ');
-        });
         
         // FITUR: Format otomatis Title Case untuk PIC
         document.getElementById('pic').addEventListener('blur', function(e) {
