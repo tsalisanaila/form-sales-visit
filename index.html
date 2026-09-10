@@ -187,8 +187,13 @@
             </div>
 
             <div class="form-group">
-                <label>Nama / Outlet (Cari atau tambah baru)</label>
-                <input type="text" id="nama_outlet" list="outlet_list" autocomplete="off" placeholder="Ketik nama outlet..." required>
+                <label>Leads (Perusahaan/Perorangan)</label>
+                <!-- Placeholder ditambahkan sebagai contoh -->
+                <input type="text" id="nama_outlet" list="outlet_list" autocomplete="off" placeholder="Contoh: Maju Makmur, PT" required>
+                <!-- Teks instruksi kecil di bawah kotak input -->
+                <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
+                    *Tulis PT/CV di belakang. Sistem otomatis merapikan huruf kapital.
+                </small>
                 <datalist id="outlet_list"></datalist>
                 <input type="hidden" id="id_outlet"> 
                 
@@ -199,12 +204,19 @@
 
             <div class="form-group">
                 <label>Alamat</label>
-                <input type="text" id="alamat" placeholder="Masukkan alamat lengkap..." required>
+                <input type="text" id="alamat" placeholder="Contoh: Jl. Merdeka No.10, Kel. Citarum, Kec. Bandung Wetan, Kota Bandung" required>
+                <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
+                    *Isi lengkap sesuai panduan titik Google Maps.
+                </small>
             </div>
 
             <div class="form-group">
                 <label>No Telp</label>
-                <input type="text" id="no_telp" placeholder="Contoh: 08123456789" required>
+                <!-- Placeholder diubah untuk mencontohkan awalan 62 -->
+                <input type="text" id="no_telp" placeholder="Contoh: 6281234567890" required>
+                <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
+                    *Gunakan awalan 62 (Tanpa tanda +, spasi, atau strip).
+                </small>
             </div>
 
             <div class="form-group">
@@ -221,6 +233,7 @@
                 <div class="checkbox-group">
                     <label><input type="checkbox" class="produk" value="Raw material"> Raw material</label>
                     <label><input type="checkbox" class="produk" value="Konsentrat"> Konsentrat</label>
+                    <label><input type="checkbox" class="produk" value="Livestock"> Livestock</label>
                     <label><input type="checkbox" class="produk" value="Frozen Beef"> Frozen Beef</label>
                     <label><input type="checkbox" class="produk" value="Fresh Beef"> Fresh Beef</label>
                     <label><input type="checkbox" class="produk" value="Processed Food"> Processed Food</label>
@@ -241,9 +254,9 @@
                     <label><input type="checkbox" class="status" value="Quotation"> Quotation</label>
                     <label><input type="checkbox" class="status" value="Sampling"> Sampling</label>
                     <label><input type="checkbox" class="status" value="Closed Won"> Closed Won</label>
-                    <label><input type="checkbox" class="status" value="Contract"> Contract</label>
                     <label><input type="checkbox" class="status" value="Closed Lost"> Closed Lost</label>
                     <label><input type="checkbox" class="status" value="Repeat Order"> Repeat Order</label>
+                    <label><input type="checkbox" class="status" value="Contract"> Contract</label>
                 </div>
             </div>
 
@@ -325,6 +338,32 @@
                 document.getElementById('id_outlet').value = '';
                 infoStatus.style.display = 'none';
             }
+        });
+
+        // FITUR BARU 1: Format otomatis Title Case untuk Nama Outlet
+        document.getElementById('nama_outlet').addEventListener('blur', function(e) {
+            let kata = e.target.value.toLowerCase().split(' ');
+            for (let i = 0; i < kata.length; i++) {
+                if (kata[i].length > 0) {
+                    kata[i] = kata[i].charAt(0).toUpperCase() + kata[i].substring(1);
+                }
+            }
+            // Menggabungkan kembali kata dan mengembalikan ke kotak input
+            e.target.value = kata.join(' ');
+        });
+
+        // FITUR: Validasi No Telp (Hanya angka dan paksa awalan 62)
+        document.getElementById('no_telp').addEventListener('input', function(e) {
+            // Langkah 1: Hapus semua karakter yang BUKAN angka (seperti spasi, huruf, atau tanda +)
+            let angkaBersih = this.value.replace(/[^0-9]/g, '');
+
+            // Langkah 2: Jika pengguna terbiasa mengetik angka '0' di awal, otomatis ubah menjadi '62'
+            if (angkaBersih.startsWith('0')) {
+                angkaBersih = '62' + angkaBersih.substring(1);
+            }
+
+            // Langkah 3: Tampilkan kembali angka yang sudah bersih dan terformat ke dalam kotak input
+            this.value = angkaBersih;
         });
 
         document.getElementById('salesForm').addEventListener('submit', async function(e) {
